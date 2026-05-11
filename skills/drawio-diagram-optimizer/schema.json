@@ -1,0 +1,143 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "drawio-diagram-optimizer skill schema",
+  "description": "Defines the input request and output result for the drawio-diagram-optimizer skill.",
+  "definitions": {
+    "SkillRequest": {
+      "type": "object",
+      "required": ["task", "input"],
+      "properties": {
+        "task": {
+          "type": "string",
+          "enum": ["generate_or_optimize_drawio_diagram"],
+          "description": "The skill task name."
+        },
+        "input": {
+          "type": "object",
+          "required": ["description"],
+          "properties": {
+            "description": {
+              "type": "string",
+              "description": "Natural language description of the diagram to generate or optimize."
+            },
+            "diagramType": {
+              "type": "string",
+              "enum": ["architecture", "flowchart", "sequence", "er", "mindmap"],
+              "default": "architecture",
+              "description": "The type of diagram to generate."
+            },
+            "layoutDirection": {
+              "type": "string",
+              "enum": ["TB", "LR", "BT", "RL"],
+              "default": "TB",
+              "description": "Primary layout direction for the diagram."
+            },
+            "constraints": {
+              "type": "object",
+              "properties": {
+                "maxNodesPerGroup": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 20,
+                  "default": 8
+                },
+                "preferShortLabels": {
+                  "type": "boolean",
+                  "default": true
+                },
+                "splitComplexDiagrams": {
+                  "type": "boolean",
+                  "default": true
+                }
+              },
+              "additionalProperties": false
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "Group": {
+      "type": "object",
+      "required": ["id", "title", "parentId", "level", "layoutHint", "styleRole"],
+      "properties": {
+        "id": { "type": "string" },
+        "title": { "type": "string" },
+        "parentId": { "type": ["string", "null"] },
+        "level": { "type": "integer", "minimum": 1 },
+        "layoutHint": { "type": "string", "enum": ["vertical", "horizontal", "grid"] },
+        "styleRole": { "type": "string", "enum": ["container", "swimlane", "cluster"] }
+      },
+      "additionalProperties": false
+    },
+    "NodeLayoutHint": {
+      "type": "object",
+      "properties": {
+        "order": { "type": "integer", "minimum": 1 }
+      },
+      "additionalProperties": false
+    },
+    "Node": {
+      "type": "object",
+      "required": ["id", "label", "shortLabel", "type", "groupId", "level", "width", "height", "styleRole"],
+      "properties": {
+        "id": { "type": "string" },
+        "label": { "type": "string", "description": "Full descriptive label (used in annotations/tooltips)." },
+        "shortLabel": { "type": "string", "maxLength": 20, "description": "Short display label shown inside the node." },
+        "type": { "type": "string", "enum": ["start-end", "process", "decision", "data", "connector"] },
+        "groupId": { "type": "string", "description": "ID of the group this node belongs to." },
+        "level": { "type": "integer", "minimum": 1 },
+        "width": { "type": "integer", "minimum": 40 },
+        "height": { "type": "integer", "minimum": 30 },
+        "styleRole": {
+          "type": "string",
+          "enum": ["start-end", "primary-process", "secondary-process", "decision", "data", "container"]
+        },
+        "layoutHint": { "$ref": "#/definitions/NodeLayoutHint" }
+      },
+      "additionalProperties": false
+    },
+    "Edge": {
+      "type": "object",
+      "required": ["id", "source", "target", "label", "type", "priority"],
+      "properties": {
+        "id": { "type": "string" },
+        "source": { "type": "string", "description": "ID of the source node." },
+        "target": { "type": "string", "description": "ID of the target node." },
+        "label": { "type": "string" },
+        "type": { "type": "string", "enum": ["solid", "dashed", "dotted"] },
+        "priority": { "type": "integer", "minimum": 1 }
+      },
+      "additionalProperties": false
+    },
+    "Annotation": {
+      "type": "object",
+      "required": ["id", "targetId", "text"],
+      "properties": {
+        "id": { "type": "string" },
+        "targetId": { "type": "string", "description": "ID of the node this annotation targets." },
+        "text": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+    "DiagramResult": {
+      "type": "object",
+      "required": ["title", "diagramType", "layoutDirection", "groups", "nodes", "edges", "annotations"],
+      "properties": {
+        "title": { "type": "string" },
+        "diagramType": { "type": "string", "enum": ["architecture", "flowchart", "sequence", "er", "mindmap"] },
+        "layoutDirection": { "type": "string", "enum": ["TB", "LR", "BT", "RL"] },
+        "groups": { "type": "array", "items": { "$ref": "#/definitions/Group" } },
+        "nodes": { "type": "array", "items": { "$ref": "#/definitions/Node" } },
+        "edges": { "type": "array", "items": { "$ref": "#/definitions/Edge" } },
+        "annotations": { "type": "array", "items": { "$ref": "#/definitions/Annotation" } }
+      },
+      "additionalProperties": false
+    }
+  },
+  "oneOf": [
+    { "$ref": "#/definitions/SkillRequest" },
+    { "$ref": "#/definitions/DiagramResult" }
+  ]
+}
