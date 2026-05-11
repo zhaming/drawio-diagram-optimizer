@@ -1,0 +1,13 @@
+{
+  "task": "generate_or_optimize_drawio_diagram",
+  "input": {
+    "description": "Generate a diagram showing the flow of an AI agent processing a user task using tools. The agent receives a user request, parses it, decides which tool to call, executes the tool (which may do retrieval, computation, or external API calls), aggregates the results, and returns a response to the user.",
+    "diagramType": "architecture",
+    "layoutDirection": "TB",
+    "constraints": {
+      "maxNodesPerGroup": 8,
+      "preferShortLabels": true,
+      "splitComplexDiagrams": true
+    }
+  }
+}

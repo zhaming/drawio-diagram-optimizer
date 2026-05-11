@@ -1,0 +1,30 @@
+{
+  "name": "drawio-diagram-optimizer",
+  "version": "0.1.0",
+  "private": true,
+  "description": "A skill-side renderer and tooling set for converting structured diagram JSON into draw.io XML.",
+  "type": "module",
+  "bin": {
+    "drawio-render": "./dist/cli.js"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "clean": "node -e \"import('node:fs').then(fs => fs.rmSync('dist', { recursive: true, force: true }))\"",
+    "test": "npm run build && node --test dist/drawio-renderer.test.js",
+    "render:example": "npm run build && node dist/cli.js ./examples/example-output.json --output ./examples/example-output.drawio.xml"
+  },
+  "keywords": [
+    "drawio",
+    "diagrams",
+    "renderer",
+    "xml",
+    "skill"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "devDependencies": {
+    "@types/node": "^25.6.2",
+    "typescript": "^5.8.3"
+  }
+}
